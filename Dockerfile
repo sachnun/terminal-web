@@ -11,6 +11,9 @@ RUN xargs apt-get -y install < packages.txt
 # Set the working directory inside the container
 WORKDIR /app
 
+# allow permissions
+RUN chmod -R 777 /app
+
 # Install the Python dependencies
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
