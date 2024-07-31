@@ -4,6 +4,9 @@ FROM python:3.10
 # install Git (if it's not already installed)
 RUN apt-get update && apt-get install -y git
 
+# allow permissions
+RUN find . -type d -exec bash -c 'chmod 777 "$0"' {} \;
+
 # force docker to rebuild from this step if version.json changes
 ADD http://worldtimeapi.org/api/timezone/Asia/Jakarta version.json
 
@@ -12,9 +15,6 @@ ENV TZ=Asia/Jakarta
 
 # git clone from private repo
 RUN --mount=type=secret,id=GIT_REPO,mode=0444,required=true git clone $(cat /run/secrets/GIT_REPO) /app
-
-# allow permissions
-RUN find . -type d -exec bash -c 'chmod 777 "$0"' {} \;
 
 # set working directory
 WORKDIR /app

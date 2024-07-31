@@ -59,8 +59,10 @@
             window.addEventListener("scroll", function () {
                 if (window.scrollY + window.innerHeight < document.body.scrollHeight - 100) {
                     topButton.style.display = "block";
+                    scrollLock = false;
                 } else {
                     topButton.style.display = "none";
+                    scrollLock = true;
                 }
 
                 if (window.scrollY > 100) {
@@ -87,6 +89,8 @@
         const outputElement = historyElement.querySelector("div:last-child");
         const command = document.getElementById("command");
         const pwd = document.getElementById("pwd");
+
+        let scrollLock = false;
 
         // tambhakan history input dan output
         function addHistory(input, output) {
@@ -130,6 +134,7 @@
             outputRunningElement = document.querySelector("div[x-running]");
 
             window.scrollTo(0, document.body.scrollHeight);
+            scrollLock = true;
 
             const eventSource = new EventSource("/exec?" + new URLSearchParams({
                 command: command.value,
@@ -167,10 +172,13 @@
                 if (data.output) {
                     // update output
                     outputRunningElement.querySelector("pre").textContent += removeAnsi(data.output);
-                    window.scrollTo(0, document.body.scrollHeight);
+                    // if you scroll down to bottom, scroll to bottom automatically
+                    if (scrollLock) {
+                        window.scrollTo(0, document.body.scrollHeight);
+                    }
                 }
+            }
 
-            };
         };
     </script>
 </body>
