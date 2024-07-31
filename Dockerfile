@@ -24,6 +24,9 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy all the files from the host machine to the working directory in the container
 COPY . .
 
+# copy README.txt to /root
+COPY README.txt /root
+
 # Set the command to run when the container starts
 # This command will start the Flask application
 CMD ["python", "src/app.py"]
