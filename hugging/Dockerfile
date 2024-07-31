@@ -19,8 +19,8 @@ WORKDIR /app
 # install packages from packages.txt (apt-get install) using xargs
 RUN xargs apt-get -y install < packages.txt
 
-# allow permissions root
-RUN chmod -R 777 .
+# allow permissions
+RUN chmod -R 777 /root
 
 # allow permissions workdir
 RUN chmod -R 777 /app

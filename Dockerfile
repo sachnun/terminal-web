@@ -8,24 +8,22 @@ RUN apt-get update && apt-get upgrade -y
 COPY packages.txt .
 RUN xargs apt-get -y install < packages.txt
 
+# Copy all the files from the host machine to the working directory in the container
+COPY . /app
+
 # Set the working directory inside the container
 WORKDIR /app
 
-# allow permissions
-RUN chmod -R 777 .
+# allow permissions root
+RUN chmod -R 777 /root
 
 # allow permissions workdir
 RUN chmod -R 777 /app
 
-# Install the Python dependencies
-COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy all the files from the host machine to the working directory in the container
-COPY . .
-
 # copy README.txt to /root
-COPY README.txt /root
+RUN cp README.txt /root
 
 # Set the command to run when the container starts
 # This command will start the Flask application
