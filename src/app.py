@@ -7,22 +7,31 @@ import json
 app = Flask(__name__)
 
 
-def execute_command(command):
-    try:
+def execute_command(command: str, pwd: str):
+    def process(command: str, pwd: str):
         process = subprocess.Popen(
             command,
             shell=True,
             stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT,
             encoding="utf-8",
+            cwd=pwd,
         )
-        for output_line in process.stdout:
+        yield from process.stdout
+
+    try:
+        # have cd command so change pwd, but make sure not have &&
+        if command.startswith("cd") and "&&" not in command:
+            pwd = next(process(command + " && pwd", pwd)).strip()
+            yield f"data: {json.dumps({'output': pwd, 'pwd': pwd})}\n\n"
+            return
+
+        for output_line in process(command, pwd):
             yield f"data: {json.dumps({'output': output_line})}\n\n"
     except subprocess.CalledProcessError as error:
         error_message = error.stderr.strip()
         yield f"data: {json.dumps({'output': error_message})}\n\n"
     finally:
-        process.stdout.close()
         yield f"data: {json.dumps({'output': '[DONE]'})}\n\n"
 
 
@@ -34,7 +43,7 @@ def hello_world():
     uname = subprocess.check_output(["uname", "-a"], encoding="utf-8")
 
     return render_template(
-        "terminal.html", welcome_input="uname -a", welcome_output=uname
+        "terminal.html", welcome_input="uname -a", welcome_output=uname, pwd="/"
     )
 
 
@@ -42,10 +51,11 @@ def hello_world():
 @app.route("/exec")
 def exec():
     command = request.args.get("command")
+    pwd = request.args.get("pwd")
 
     # event stream
     return Response(
-        stream_with_context(execute_command(command)), mimetype="text/event-stream"
+        stream_with_context(execute_command(command, pwd)), mimetype="text/event-stream"
     )
 
 

@@ -39,8 +39,12 @@
             <!-- input -->
             <div class="bg-gray-800 rounded-lg p-4 w-full shadow-lg">
                 <form action="/exec" method="GET" onsubmit="return executeCommand(event)">
-                    <input type="text" id="command" name="command" class="w-full p-2 bg-gray-700 rounded-md"
-                        placeholder=" uname -a" autocomplete="off" autofocus>
+                    <div class="flex items-center space-x-2">
+                        <span class="text-gray-400 flex-shrink-0" id="pwd_placeholder">{{ pwd }}</span>
+                        <input type="text" id="command" name="command" class="w-full p-2 bg-gray-700 rounded-md"
+                            placeholder="{{ welcome_input }}" autocomplete="off" autofocus>
+                    </div>
+                    <input type="hidden" id="pwd" name="pwd" value="{{ pwd }}">
                 </form>
             </div>
         </div>
@@ -82,6 +86,7 @@
         const inputElement = historyElement.querySelector("div:first-child");
         const outputElement = historyElement.querySelector("div:last-child");
         const command = document.getElementById("command");
+        const pwd = document.getElementById("pwd");
 
         // tambhakan history input dan output
         function addHistory(input, output) {
@@ -104,6 +109,17 @@
             return text.replace(/\[(\d+)(;\d+)*[mK]/g, "");
         }
 
+        // if on focus input and press UP
+        command.addEventListener("focus", () => {
+            window.addEventListener("keydown", (event) => {
+                // on TAB
+                if (event.key === "Tab") {
+                    event.preventDefault();
+                    command.value = command.placeholder;
+                }
+            })
+        });
+
         const executeCommand = (event) => {
             event.preventDefault();
             // disable input
@@ -115,19 +131,32 @@
 
             window.scrollTo(0, document.body.scrollHeight);
 
-            const eventSource = new EventSource("/exec?command=" + encodeURIComponent(command.value));
+            const eventSource = new EventSource("/exec?" + new URLSearchParams({
+                command: command.value,
+                pwd: pwd.value
+            }));
 
             eventSource.onmessage = function (event) {
                 const data = JSON.parse(event.data);
+                if (data.pwd) {
+                    // set pwd
+                    document.getElementById("pwd").value = data.pwd;
+                    document.getElementById("pwd_placeholder").textContent = data.pwd;
+                }
+
                 // if done stop listening
                 if (data.output === "[DONE]") {
                     eventSource.close();
                     // enable input
                     command.disabled = false;
                     // set command value to placeholder
-                    command.placeholder = ` ${command.value}`;
+                    command.placeholder = command.value;
                     // remove running arttribute
                     outputRunningElement.removeAttribute("x-running");
+                    // if output is empty remove element
+                    if (outputRunningElement.querySelector("pre").textContent === "") {
+                        outputRunningElement.remove();
+                    }
 
                     // clear input and make command focus
                     command.value = "";
