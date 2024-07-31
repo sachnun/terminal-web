@@ -19,8 +19,10 @@ WORKDIR /app
 # install packages from packages.txt (apt-get install) using xargs
 RUN xargs apt-get -y install < packages.txt
 
-# allow permissions
-RUN chmod -R 777 /app
+# Fix permissions and ownership for the mounted files
+RUN find /app -type d -exec chmod 777 {} + \
+    && find /app -type f -exec chmod 666 {} + \
+    && chown -R $(id -u):$(id -g) /app
 
 # Install the Python dependencies
 RUN pip install --no-cache-dir -r requirements.txt
