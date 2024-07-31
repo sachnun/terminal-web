@@ -12,6 +12,9 @@ RUN xargs apt-get -y install < packages.txt
 WORKDIR /app
 
 # allow permissions
+RUN chmod -R 777 .
+
+# allow permissions workdir
 RUN chmod -R 777 /app
 
 # Install the Python dependencies

@@ -1,8 +1,8 @@
 from flask import Flask, render_template, request, Response, stream_with_context
 
-import os
 import subprocess
 import json
+import os
 
 app = Flask(__name__)
 
@@ -20,10 +20,13 @@ def execute_command(command: str, pwd: str):
         yield from process.stdout
 
     try:
-        # have cd command so change pwd, but make sure not have &&
+
+        # have cd command so change pwd
         if command.startswith("cd") and "&&" not in command:
             pwd = next(process(command + " && pwd", pwd)).strip()
-            yield f"data: {json.dumps({'output': pwd, 'pwd': pwd})}\n\n"
+            yield f"data: {json.dumps({'output': pwd})}\n\n"
+            if not "not found" in pwd:
+                yield f"data: {json.dumps({'pwd': pwd})}\n\n"
             return
 
         for output_line in process(command, pwd):
@@ -43,7 +46,7 @@ def hello_world():
     uname = subprocess.check_output(["uname", "-a"], encoding="utf-8")
 
     return render_template(
-        "terminal.html", welcome_input="uname -a", welcome_output=uname, pwd="/"
+        "terminal.html", welcome_input="uname -a", welcome_output=uname, pwd="/root"
     )
 
 
