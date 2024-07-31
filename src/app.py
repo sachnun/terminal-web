@@ -49,6 +49,13 @@ def exec():
     )
 
 
+# ping
+@app.route("/ping")
+def ping():
+    # 204
+    return Response(status=204)
+
+
 if __name__ == "__main__":
     # port huggingface space
     app.run(host="0.0.0.0", port=7860, debug=True)

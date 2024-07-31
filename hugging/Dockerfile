@@ -24,11 +24,7 @@ WORKDIR /app
 RUN chmod -R 777 /app
 
 # Install the Python dependencies
-COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
-
-# Copy all the files from the host machine to the working directory in the container
-COPY . .
 
 # Set the command to run when the container starts
 # This command will start the Flask application
