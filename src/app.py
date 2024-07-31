@@ -3,6 +3,7 @@ from flask import Flask, render_template, request, Response, stream_with_context
 import subprocess
 import json
 import os
+import time
 
 app = Flask(__name__)
 
@@ -29,8 +30,18 @@ def execute_command(command: str, pwd: str):
                 yield f"data: {json.dumps({'pwd': pwd})}\n\n"
             return
 
+        output_buffer = ""
+        start_time = time.time()
         for output_line in process(command, pwd):
-            yield f"data: {json.dumps({'output': output_line})}\n\n"
+            output_buffer += output_line
+            current_time = time.time()
+            if current_time - start_time > 0.3:
+                yield f"data: {json.dumps({'output': output_buffer})}\n\n"
+                output_buffer = ""
+                start_time = current_time
+        if output_buffer:
+            yield f"data: {json.dumps({'output': output_buffer})}\n\n"
+
     except subprocess.CalledProcessError as error:
         error_message = error.stderr.strip()
         yield f"data: {json.dumps({'output': error_message})}\n\n"
