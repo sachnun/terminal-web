@@ -98,6 +98,12 @@
             document.getElementById("history").appendChild(copyOutputElement);
         }
 
+        // ANSI removal
+        // example: [0;32m
+        function removeAnsi(text) {
+            return text.replace(/\[(\d+)(;\d+)*[mK]/g, "");
+        }
+
         const executeCommand = (event) => {
             event.preventDefault();
             // disable input
@@ -130,7 +136,7 @@
                 }
 
                 // update output
-                outputRunningElement.querySelector("pre").textContent += data.output;
+                outputRunningElement.querySelector("pre").textContent += removeAnsi(data.output);
                 window.scrollTo(0, document.body.scrollHeight);
             };
         };
