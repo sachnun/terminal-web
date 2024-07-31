@@ -13,11 +13,11 @@ ENV TZ=Asia/Jakarta
 # git clone from private repo
 RUN --mount=type=secret,id=GIT_REPO,mode=0444,required=true git clone $(cat /run/secrets/GIT_REPO) /app
 
-# install packages from packages.txt (apt-get install) using xargs
-RUN xargs apt-get -y install < packages.txt
-
 # Set the working directory inside the container
 WORKDIR /app
+
+# install packages from packages.txt (apt-get install) using xargs
+RUN xargs apt-get -y install < packages.txt
 
 # allow permissions
 RUN chmod -R 777 /app
