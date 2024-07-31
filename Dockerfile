@@ -14,11 +14,8 @@ COPY . /app
 # Set the working directory inside the container
 WORKDIR /app
 
-# allow permissions root
-RUN chmod -R 777 /root
-
-# allow permissions workdir
-RUN chmod -R 777 /app
+# give permission to root user
+RUN chown -R root:root . && find . -type d -exec chmod 755 {} \; && find . -type f -exec chmod 644 {} \;
 
 RUN pip install --no-cache-dir -r requirements.txt
 
