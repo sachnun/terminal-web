@@ -11,18 +11,16 @@ ADD http://worldtimeapi.org/api/timezone/Asia/Jakarta version.json
 ENV TZ=Asia/Jakarta
 
 # git clone from private repo
-RUN --mount=type=secret,id=GIT_REPO,mode=0444,required=true git clone $(cat /run/secrets/GIT_REPO) /app
-
-# Set the working directory inside the container
-WORKDIR /app
+RUN --mount=type=secret,id=GIT_REPO,mode=0444,required=true git clone $(cat /run/secrets/GIT_REPO) .
 
 # install packages from packages.txt (apt-get install) using xargs
 RUN xargs apt-get -y install < packages.txt
 
-# Fix permissions and ownership for the mounted files
-RUN find /app -type d -exec chmod 777 {} + \
-    && find /app -type f -exec chmod 666 {} + \
-    && chown -R $(id -u):$(id -g) /app
+# allo permissions root
+RUN cd ~ && chmod -R 777 .
+
+# allow permissions this step
+RUN chmod -R 777 .
 
 # Install the Python dependencies
 RUN pip install --no-cache-dir -r requirements.txt
