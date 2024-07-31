@@ -30,17 +30,17 @@ def execute_command(command: str, pwd: str):
                 yield f"data: {json.dumps({'pwd': pwd})}\n\n"
             return
 
-        output_buffer = ""
+        output = ""
         start_time = time.time()
-        for output_line in process(command, pwd):
-            output_buffer += output_line
+        for line in process(command, pwd):
+            output += line
             current_time = time.time()
-            if current_time - start_time > 0.3:
-                yield f"data: {json.dumps({'output': output_buffer})}\n\n"
-                output_buffer = ""
+            if current_time - start_time >= 0.3:
+                yield f"data: {json.dumps({'output': output})}\n\n"
+                output = ""
                 start_time = current_time
-        if output_buffer:
-            yield f"data: {json.dumps({'output': output_buffer})}\n\n"
+        if output:
+            yield f"data: {json.dumps({'output': output})}\n\n"
 
     except subprocess.CalledProcessError as error:
         error_message = error.stderr.strip()

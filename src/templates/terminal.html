@@ -26,14 +26,18 @@
                 </style>
             </div>
             <!-- history console -->
-            <div id="history" class="space-y-4 w-full">
-                <!-- input -->
-                <div class="bg-gray-800 rounded-lg p-4 w-fit">
-                    <pre class="whitespace-pre-wrap">{{ welcome_input }}</pre>
+            <div id="history" class=" space-y-4 w-full">
+                <!-- input in right -->
+                <div id="history-input" class="w-full flex justify-end">
+                    <div class="bg-gray-800 rounded-lg p-4 overflow-y-auto w-fit">
+                        <pre class="whitespace-pre-line">{{ welcome_input }}</pre>
+                    </div>
                 </div>
-                <!-- output -->
-                <div class="bg-gray-700 rounded-lg p-4 overflow-y-auto w-fit">
-                    <pre class="whitespace-pre-wrap">{{ welcome_output }}</pre>
+                <!-- output in left -->
+                <div id="history-output" class="w-full flex justify-start">
+                    <div class="bg-gray-700 rounded-lg p-4 overflow-y-auto w-fit">
+                        <pre class="whitespace-pre-line">{{ welcome_output }}</pre>
+                    </div>
                 </div>
             </div>
             <!-- input -->
@@ -59,10 +63,10 @@
             window.addEventListener("scroll", function () {
                 if (window.scrollY + window.innerHeight < document.body.scrollHeight - 100) {
                     topButton.style.display = "block";
-                    scrollLock = false;
+                    scrollLock = true;
                 } else {
                     topButton.style.display = "none";
-                    scrollLock = true;
+                    scrollLock = false;
                 }
 
                 if (window.scrollY > 100) {
@@ -85,8 +89,6 @@
 
     <script>
         const historyElement = document.getElementById("history");
-        const inputElement = historyElement.querySelector("div:first-child");
-        const outputElement = historyElement.querySelector("div:last-child");
         const command = document.getElementById("command");
         const pwd = document.getElementById("pwd");
 
@@ -94,9 +96,8 @@
 
         // tambhakan history input dan output
         function addHistory(input, output) {
-            // copy input and output elements
-            const copyInputElement = inputElement.cloneNode(true);
-            const copyOutputElement = outputElement.cloneNode(true);
+            const copyInputElement = document.getElementById("history-input").cloneNode(true);
+            const copyOutputElement = document.getElementById("history-output").cloneNode(true);
             // set input and output content
             copyInputElement.querySelector("pre").textContent = input;
             copyOutputElement.querySelector("pre").textContent = output;
@@ -134,7 +135,7 @@
             outputRunningElement = document.querySelector("div[x-running]");
 
             window.scrollTo(0, document.body.scrollHeight);
-            scrollLock = true;
+            scrollLock = false;
 
             const eventSource = new EventSource("/exec?" + new URLSearchParams({
                 command: command.value,
@@ -173,7 +174,7 @@
                     // update output
                     outputRunningElement.querySelector("pre").textContent += removeAnsi(data.output);
                     // if you scroll down to bottom, scroll to bottom automatically
-                    if (scrollLock) {
+                    if (!scrollLock) {
                         window.scrollTo(0, document.body.scrollHeight);
                     }
                 }
