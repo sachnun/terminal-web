@@ -29,7 +29,7 @@ RUN chmod -R 777 /app
 RUN pip install --no-cache-dir -r requirements.txt
 
 # copy README.txt to /root
-COPY README.txt /root
+COPY /app/README.txt /root
 
 # Set the command to run when the container starts
 # This command will start the Flask application
