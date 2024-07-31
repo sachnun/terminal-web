@@ -164,9 +164,12 @@
                     return;
                 }
 
-                // update output
-                outputRunningElement.querySelector("pre").textContent += removeAnsi(data.output);
-                window.scrollTo(0, document.body.scrollHeight);
+                if (data.output) {
+                    // update output
+                    outputRunningElement.querySelector("pre").textContent += removeAnsi(data.output);
+                    window.scrollTo(0, document.body.scrollHeight);
+                }
+
             };
         };
     </script>

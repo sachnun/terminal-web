@@ -20,10 +20,7 @@ WORKDIR /app
 RUN xargs apt-get -y install < packages.txt
 
 # allow permissions
-RUN chmod -R 777 /root
-
-# allow permissions workdir
-RUN chmod -R 777 /app
+RUN chmod -R 777 . && chmod -R 777 /root
 
 # Install the Python dependencies
 RUN pip install --no-cache-dir -r requirements.txt
