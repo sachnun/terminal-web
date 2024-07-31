@@ -25,7 +25,7 @@ def execute_command(command: str, pwd: str):
         if command.startswith("cd") and "&&" not in command:
             pwd = next(process(command + " && pwd", pwd)).strip()
             yield f"data: {json.dumps({'output': pwd})}\n\n"
-            if not "not found" in pwd:
+            if not "/bin/sh:" in pwd:
                 yield f"data: {json.dumps({'pwd': pwd})}\n\n"
             return
 
