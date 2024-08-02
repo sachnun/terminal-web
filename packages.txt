@@ -1,3 +1,6 @@
 ffmpeg
 libsm6
 libxext6
+net-tools
+handbrake-cli
+mencoder
