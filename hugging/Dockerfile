@@ -5,7 +5,8 @@ FROM python:3.10
 RUN apt-get update && apt-get install -y git
 
 # allow permissions
-RUN find . -type d -exec bash -c 'chmod 777 "$0"' {} \;
+RUN chmod 777 -R .
+RUN chmod 777 -R /root
 
 # force docker to rebuild from this step if version.json changes
 ADD http://worldtimeapi.org/api/timezone/Asia/Jakarta version.json
