@@ -4,3 +4,4 @@ libxext6
 net-tools
 handbrake-cli
 mencoder
+unrar-free
