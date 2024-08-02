@@ -5,7 +5,6 @@ FROM python:3.10
 RUN apt-get update && apt-get install -y git
 
 # allow permissions
-RUN chmod 777 -R .
 RUN chmod 777 -R /root
 
 # force docker to rebuild from this step if version.json changes
