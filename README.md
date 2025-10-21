@@ -27,13 +27,6 @@ python src/app.py
 
 The application runs on `http://localhost:7860`
 
-## Docker
-
-```bash
-docker build -t terminal-web .
-docker run -p 7860:7860 terminal-web
-```
-
 ## Deployment
 
 Automatic deployment to Hugging Face Spaces via GitHub Actions on push to main branch.
@@ -44,4 +37,4 @@ Required GitHub Actions secrets:
 
 ## License
 
-MIT
+[MIT](LICENSE)
