@@ -7,6 +7,7 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    if: ${{ secrets.HF_SPACE != '' && secrets.HF_TOKEN != '' }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -14,8 +15,8 @@ jobs:
       - name: Deploy to Hugging Face
         uses: nateraw/huggingface-sync-action@v0.0.3
         with:
-          github_repo_id: 'sachnun/terminal-web'
-          huggingface_repo_id: 'dakunesu/terminal'
+          github_repo_id: ${{ github.repository }}
+          huggingface_repo_id: ${{ secrets.HF_SPACE }}
           hf_token: ${{ secrets.HF_TOKEN }}
           repo_type: 'space'
           private: false
